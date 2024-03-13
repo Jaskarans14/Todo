@@ -11,7 +11,7 @@ export default function Table(props) {
             <th scope="col">Delete</th>
           </tr>
         </thead>
-        <tbody id="table-body">{props.tasks()}</tbody>
+        <tbody id="table-body">{props.tasks}</tbody>
       </table>
     </div>
   );

@@ -10,11 +10,16 @@ function Searchbar(props) {
         className="form-control"
         placeholder="Search with Title..."
         aria-label="Recipient's username with two button addons"
+        value={props.searchedTitle}
+        onChange={(e) => {
+          props.setSearchedTitle(e.target.value);
+        }}
       />
       <button
         id="search-btn"
         className="btn btn-outline-secondary mx-2"
         type="button"
+        onClick={props.searchedTask}
       >
         Search
       </button>
@@ -66,9 +71,7 @@ function EditTaskModal(props) {
                 type="text"
                 className="form-control"
                 id="edit-title"
-                defaultValue={
-                  props.currentEditTask ? props.currentEditTask[0] : ""
-                }
+                value={props.currentEditTask ? props.currentEditTask[0] : ""}
                 onChange={(e) => {
                   props.updateTitle(e.target.value);
                 }}
@@ -81,9 +84,7 @@ function EditTaskModal(props) {
               <textarea
                 className="form-control"
                 id="edit-description"
-                defaultValue={
-                  props.currentEditTask ? props.currentEditTask[1] : ""
-                }
+                value={props.currentEditTask ? props.currentEditTask[1] : ""}
                 onChange={(e) => {
                   props.updateDesc(e.target.value);
                 }}
@@ -198,6 +199,7 @@ function App() {
   const [taskArr, setTaskArr] = useState([]);
   const [currentEdit, setCurrentEdit] = useState("");
   const [currentEditTask, setCurrentEditTask] = useState("");
+  const [searchedTitle, setSearchedTitle] = useState("");
 
   // Add the task in the table and used in add button in AddTaskModal
   const addTask = () => {
@@ -263,51 +265,108 @@ function App() {
     localStorage.setItem("todoList", JSON.stringify(newTaskArr));
     setCurrentEdit("");
   };
+  const searchedTask = () => {
+    let taskDetails = taskArr.map((element, index) => {
+      if (element[0] == searchedTitle) {
+        return (
+          <tr key={index}>
+            <th scope="row">{index + 1}</th>
+            <td>{element[0]}</td>
+            <td>{element[1]}</td>
+            <td>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#edit-task"
+                onClick={() => {
+                  editTask(index, element);
+                }}
+              >
+                Edit
+              </button>
+            </td>
+            <td>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => {
+                  deleteTask(index);
+                }}
+                type="button"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        );
+      }
+    });
+    return taskDetails;
+  };
 
   // Creating table for the tasks and used in Table component
   const taskTable = () => {
-    let taskDetails = taskArr.map((element, index) => {
+    if (taskArr.length > 0) {
+      let taskDetails = taskArr.map((element, index) => {
+        return (
+          <tr key={index}>
+            <th scope="row">{index + 1}</th>
+            <td>{element[0]}</td>
+            <td>{element[1]}</td>
+            <td>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#edit-task"
+                onClick={() => {
+                  editTask(index, element);
+                }}
+              >
+                Edit
+              </button>
+            </td>
+            <td>
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => {
+                  deleteTask(index);
+                }}
+                type="button"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        );
+      });
+      return taskDetails;
+    } else {
       return (
-        <tr key={index}>
-          <th scope="row">{index + 1}</th>
-          <td>{element[0]}</td>
-          <td>{element[1]}</td>
-          <td>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#edit-task"
-              onClick={() => {
-                editTask(index, element);
-              }}
-            >
-              Edit
-            </button>
-          </td>
-          <td>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => {
-                deleteTask(index);
-              }}
-              type="button"
-            >
-              Delete
-            </button>
-          </td>
+        <tr>
+          <th></th>
+          <td></td>
+          <td className="d-flex justify-content-center">No data Available</td>
+          <td></td>
+          <td></td>
         </tr>
       );
-    });
-    return taskDetails;
+    }
   };
 
   return (
     <>
       <div id="main-container" className="container">
         <h2 className="text-center mt-3 mb-5">TODO's LIST</h2>
-        <Searchbar />
-        <Table tasks={taskTable} />
+        <Searchbar
+          searchedTitle={searchedTitle}
+          setSearchedTitle={setSearchedTitle}
+          searchedTask={searchedTask}
+        />
+        <Table
+          tasks={searchedTitle ? searchedTask() : taskTable()}
+          searchedTask={searchedTask}
+        />
         <AddBtn />
         <AddTaskModal
           title={title}
