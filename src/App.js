@@ -8,11 +8,10 @@ function Searchbar(props) {
         type="text"
         id="search-input"
         className="form-control"
-        placeholder="Search with Title..."
-        aria-label="Recipient's username with two button addons"
-        value={props.searchedTitle}
+        placeholder="Search here..."
+        value={props.searchedValue}
         onChange={(e) => {
-          props.setSearchedTitle(e.target.value);
+          props.setsearchedValue(e.target.value);
         }}
       />
       <button
@@ -147,6 +146,7 @@ function AddTaskModal(props) {
                 type="text"
                 className="form-control"
                 id="task-title"
+                placeholder="Add title here..."
                 value={props.title}
                 onChange={(e) => {
                   props.setTitle(e.target.value);
@@ -160,6 +160,7 @@ function AddTaskModal(props) {
               <textarea
                 className="form-control"
                 id="task-description"
+                placeholder="Enter Description of the task here..."
                 value={props.desc}
                 onChange={(e) => {
                   props.setDesc(e.target.value);
@@ -199,7 +200,7 @@ function App() {
   const [taskArr, setTaskArr] = useState([]);
   const [currentEdit, setCurrentEdit] = useState("");
   const [currentEditTask, setCurrentEditTask] = useState("");
-  const [searchedTitle, setSearchedTitle] = useState("");
+  const [searchedValue, setsearchedValue] = useState("");
 
   // Add the task in the table and used in add button in AddTaskModal
   const addTask = () => {
@@ -267,7 +268,7 @@ function App() {
   };
   const searchedTask = () => {
     let taskDetails = taskArr.map((element, index) => {
-      if (element[0] == searchedTitle) {
+      if (searchedValue == element[0] || searchedValue == element[1]) {
         return (
           <tr key={index}>
             <th scope="row">{index + 1}</th>
@@ -359,12 +360,12 @@ function App() {
       <div id="main-container" className="container">
         <h2 className="text-center mt-3 mb-5">TODO's LIST</h2>
         <Searchbar
-          searchedTitle={searchedTitle}
-          setSearchedTitle={setSearchedTitle}
+          searchedValue={searchedValue}
+          setsearchedValue={setsearchedValue}
           searchedTask={searchedTask}
         />
         <Table
-          tasks={searchedTitle ? searchedTask() : taskTable()}
+          tasks={searchedValue ? searchedTask() : taskTable()}
           searchedTask={searchedTask}
         />
         <AddBtn />
